@@ -1,0 +1,16 @@
+node_modules/
+
+.env
+
+# Ignore all .log files
+*.log
+
+# Ignore a specific file in a subfolder
+kafka_2.13-3.9.0.tgz
+
+# Ignore a specific folder in a subfolder
+kafka_2.13-3.9.0
+
+# Ignore all .tgz files in a subfolder and its subfolders
+*.tgz
+**/*.tgz
