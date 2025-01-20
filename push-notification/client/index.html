@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firebase Web Client</title>
+  </head>
+  <body>
+    <h1>Firebase Push Notification Client</h1>
+    <button id="requestPermission">Request Notification Permission</button>
+    <p id="status"></p>
+
+    <script type="module">
+      // Import Firebase App and Messaging modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+      import {
+        getMessaging,
+        getToken,
+        onMessage,
+      } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBzU5SAeNP4urVb25ROnKvorJ-g9p1H0fM",
+        authDomain: "push-notifications-3ae3e.firebaseapp.com",
+        databaseURL:
+          "https://push-notifications-3ae3e-default-rtdb.firebaseio.com",
+        projectId: "push-notifications-3ae3e",
+        storageBucket: "push-notifications-3ae3e.appspot.com",
+        messagingSenderId: "343986576554",
+        appId: "1:343986576554:web:b31705b086f0796c44c4d3",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const messaging = getMessaging(app);
+
+      navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then((registration) => {
+          console.log("Service Worker registered:", registration);
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+      // Request Notification Permission
+      const requestPermission = async () => {
+        const statusElement = document.getElementById("status");
+        try {
+          const permission = await Notification.requestPermission();
+          if (permission === "granted") {
+            statusElement.textContent = "Notification permission granted.";
+            // Get the device token
+            const token = await getToken(messaging, {
+              vapidKey:
+                "BGF70I6i2IT9hwkPqUb5YWvK8IbNjh7xvhLMzbWJzXGhDH4Q9250dBBarVla5hNKPDHb1EQTFWnsoIf67z1ErMs",
+            });
+            console.log("FCM Token:", token);
+            statusElement.textContent += ` Token: ${token}`;
+          } else {
+            statusElement.textContent = "Notification permission denied.";
+          }
+        } catch (error) {
+          console.error("Error requesting permission:", error);
+          statusElement.textContent =
+            "Error requesting permission. Check console for details.";
+        }
+      };
+
+      // Handle incoming messages
+      onMessage(messaging, (payload) => {
+        console.log("Message received in foreground:", payload);
+        alert(
+          `New Notification: ${payload.notification.title} - ${payload.notification.body}`
+        );
+      });
+
+      // Attach event listener to the button
+      document
+        .getElementById("requestPermission")
+        .addEventListener("click", requestPermission);
+    </script>
+  </body>
+</html>
