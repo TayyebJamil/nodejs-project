@@ -29,13 +29,19 @@ app.get("/", (req, res) => {
   );
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = app;
+
+// Start the server only in non-test environments
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
+  });
+}
 
 process.on("uncaughtException", (error) => {
   console.log("error", error);
 });
 
-console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
+// console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
